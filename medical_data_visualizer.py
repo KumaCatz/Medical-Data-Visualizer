@@ -20,17 +20,22 @@ def draw_cat_plot():
     df_cat = pd.melt(df, id_vars='cardio', value_vars=['cholesterol', 'gluc', 'smoke', 'alco', 'active', 'overweight'], var_name='feature', value_name='value')
 
     # 6
-    df_cat = df_cat.groupby(['cardio', 'feature']).size().reset_index(name='counts')
-    print(df_cat)
-    # the values are identical one to the other. theres a bug somewhere in the grouping process
+    df_cat = df_cat.groupby(['cardio', 'feature', 'value']).size().reset_index(name='counts')
+    df_cat = df_cat.rename(columns={'feature': 'variable'})
 
     # 7
+    df_cat = df_cat.loc[df_cat.index.repeat(df_cat['counts'])].drop(columns='counts')
 
+    cat_plot = sns.catplot(
+        data=df_cat,
+        x='variable',
+        hue='value',
+        col='cardio',
+        kind='count',
+        )
 
-
-    # 8
-    fig = None
-
+    # # 8
+    fig = cat_plot.fig
 
     # 9
     fig.savefig('catplot.png')
