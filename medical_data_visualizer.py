@@ -41,19 +41,23 @@ def draw_cat_plot():
     fig.savefig('catplot.png')
     return fig
 
-draw_cat_plot()
 # 10
 def draw_heat_map():
     # 11
-    df_heat = None
+    df_heat = df[~(
+        (df['ap_lo'] > df['ap_hi']) |
+        (df['height'] < df['height'].quantile(0.025)) |
+        (df['height'] > df['height'].quantile(0.975)) |
+        (df['weight'] < df['weight'].quantile(0.025)) |
+        (df['weight'] > df['weight'].quantile(0.975))
+        )]
 
     # 12
-    corr = None
+    corr = df_heat.corr()
 
     # 13
-    mask = None
-
-
+    mask = np.triu(np.ones_like(corr, dtype=bool), k=1)
+    corr_upper = corr.where(mask)
 
     # 14
     fig, ax = None
@@ -65,3 +69,5 @@ def draw_heat_map():
     # 16
     fig.savefig('heatmap.png')
     return fig
+
+draw_heat_map()
