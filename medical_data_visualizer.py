@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # 1
-df = pd.read_csv('medical_examination.csv', index_col=0)
+df = pd.read_csv('medical_examination.csv')
 
 # 2
 df['overweight'] = df['weight'] / ((df['height'] / 100) ** 2) > 25
@@ -51,20 +51,29 @@ def draw_heat_map():
         (df['weight'] < df['weight'].quantile(0.025)) |
         (df['weight'] > df['weight'].quantile(0.975))
         )]
+    df_heat = df_heat.rename(columns={'sex': 'gender'})
 
     # 12
     corr = df_heat.corr()
 
     # 13
-    mask = np.triu(np.ones_like(corr, dtype=bool), k=1)
+    mask = np.tril(np.ones_like(corr, dtype=bool), k=-1)
     corr_upper = corr.where(mask)
 
     # 14
-    fig, ax = None
+    fig, ax = plt.subplots(figsize=(12, 10))
 
     # 15
-
-
+    sns.heatmap(
+        corr_upper,
+        annot=True,
+        fmt='.1f',
+        linewidths=1,
+        linecolor='white',
+        cmap=sns.diverging_palette(240, 20, s=100, l=50, as_cmap=True),
+        center=0,
+        cbar_kws={"shrink": 0.6}
+        )
 
     # 16
     fig.savefig('heatmap.png')
